@@ -131,19 +131,19 @@ function createCryptoCard(symbol, priceData, sentimentData, predictionData) {
     }
 
     // Prediction section
-    if (predictionData && !predictionData.error) {
+    if (predictionData && !predictionData.error && predictionData.slopeDirection) {
         const predictionSection = document.createElement('div');
         predictionSection.className = 'prediction-section';
 
-        const predictedPriceEl = document.createElement('div');
-        predictedPriceEl.className = 'predicted-price';
-        predictedPriceEl.textContent = `Predicted: $${predictionData.predictedPrice.toFixed(2)}`;
+        const slopeEl = document.createElement('div');
+        slopeEl.className = `slope ${predictionData.slopeDirection}`;
+        slopeEl.textContent = `Slope: ${predictionData.slopeDirection.charAt(0).toUpperCase() + predictionData.slopeDirection.slice(1)}`;
 
         const confidenceEl = document.createElement('div');
         confidenceEl.className = 'confidence';
         confidenceEl.textContent = `Confidence: ${predictionData.confidence}% (${predictionData.basedOnDays} data points)`;
 
-        predictionSection.appendChild(predictedPriceEl);
+        predictionSection.appendChild(slopeEl);
         predictionSection.appendChild(confidenceEl);
 
         card.appendChild(predictionSection);

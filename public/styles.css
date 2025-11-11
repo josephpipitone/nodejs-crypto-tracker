@@ -171,10 +171,21 @@ h1 {
     border-top: 1px solid var(--border-color);
 }
 
-.predicted-price {
+.slope {
     font-size: 18px;
     font-weight: bold;
-    color: var(--button-bg);
+}
+
+.slope.positive {
+    color: blue;
+}
+
+.slope.negative {
+    color: #ff6b6b;
+}
+
+.slope.neutral {
+    color: var(--neutral-color);
 }
 
 .confidence {

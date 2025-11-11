@@ -14,23 +14,21 @@ async function getPredictions() {
         const timestamps = history.map((_, index) => index);
         
         // Simple linear extrapolation for minimal datasets
-        const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
         const trend = prices.length > 1 ?
           (prices[prices.length - 1] - prices[0]) / (prices.length - 1) : 0;
-        const predictedPrice = avgPrice + trend * (history.length);
-        
+        const slopeDirection = trend > 0 ? 'positive' : trend < 0 ? 'negative' : 'neutral';
+
         predictions[symbol] = {
           symbol,
-          predictedPrice: Math.max(predictedPrice, 0),
+          slopeDirection,
           confidence: Math.min(history.length * 10, 50), // Low confidence for small datasets
           basedOnDays: history.length,
-          trend: trend > 0 ? 'up' : trend < 0 ? 'down' : 'stable',
           note: 'Based on limited data - confidence may be low'
         };
       } else {
         predictions[symbol] = {
           symbol,
-          predictedPrice: null,
+          slopeDirection: null,
           confidence: 0,
           basedOnDays: history.length,
           error: 'Insufficient historical data for reliable prediction'
@@ -46,19 +44,17 @@ async function getPredictions() {
     const result = regression.linear(data);
     const [slope, intercept] = result.equation;
 
-    // Predict next point (index = history.length)
-    const nextIndex = history.length;
-    const predictedPrice = slope * nextIndex + intercept;
+    // Calculate slope direction
+    const slopeDirection = slope > 0 ? 'positive' : slope < 0 ? 'negative' : 'neutral';
 
     // Calculate confidence (R-squared)
     const confidence = Math.min(result.r2 * 100, 100); // As percentage
 
     predictions[symbol] = {
       symbol,
-      predictedPrice: Math.max(predictedPrice, 0), // Ensure non-negative
+      slopeDirection,
       confidence: Math.round(confidence),
-      basedOnDays: history.length,
-      trend: slope > 0 ? 'up' : 'down'
+      basedOnDays: history.length
     };
   }
 

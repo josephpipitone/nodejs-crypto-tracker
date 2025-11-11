@@ -1,6 +1,6 @@
 # Node.js Crypto Tracker
 
-A web application that tracks real-time cryptocurrency prices, analyzes sentiment from X (Twitter), and provides price predictions based on historical trends.
+A web application that tracks real-time cryptocurrency prices, analyzes sentiment from X (Twitter), and determines slope direction (positive/negative trend) based on historical data.
 
 ## Demo
 
@@ -10,7 +10,7 @@ A web application that tracks real-time cryptocurrency prices, analyzes sentimen
 
 - **Real-time Prices**: Fetches current prices for BTC, ETH, SOL, DOGE, and ADA from CoinGecko API
 - **Sentiment Analysis**: Analyzes recent tweets about cryptocurrencies using Twitter API and sentiment analysis
-- **Price Prediction**: Uses linear regression on historical price data to predict future prices
+- **Slope Analysis**: Uses linear regression on historical price data to determine if the trend is positive or negative
 - **Web Interface**: Clean, responsive dashboard displaying all data
 
 ## Prerequisites
@@ -32,7 +32,7 @@ A web application that tracks real-time cryptocurrency prices, analyzes sentimen
 
 1. Start the server: `npm start`
 2. Open your browser and go to `http://localhost:3000`
-3. The dashboard will load with current prices and predictions
+3. The dashboard will load with current prices and slope analysis
 4. Click "Refresh Data" to update all information
 
 ## Deployment
@@ -56,7 +56,7 @@ A web application that tracks real-time cryptocurrency prices, analyzes sentimen
 
 - `GET /api/prices` - Get current cryptocurrency prices
 - `GET /api/sentiment` - Get sentiment analysis from Twitter
-- `GET /api/predict` - Get price predictions
+- `GET /api/predict` - Get slope direction analysis
 
 ## Technologies Used
 
@@ -70,5 +70,5 @@ A web application that tracks real-time cryptocurrency prices, analyzes sentimen
 
 - Price data is cached locally for prediction analysis
 - Twitter API has rate limits; sentiment analysis may be limited
-- Predictions improve with more historical data (run the app regularly to build history)
-- Without a valid Twitter Bearer Token, sentiment analysis will show errors but prices and predictions will still work
+- Slope analysis improves with more historical data (run the app regularly to build history)
+- Without a valid Twitter Bearer Token, sentiment analysis will show errors but prices and slope analysis will still work
