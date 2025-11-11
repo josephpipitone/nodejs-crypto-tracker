@@ -1,0 +1,190 @@
+:root {
+    /* Light theme (default) */
+    --bg-color: #f5f5f5;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    --text-secondary: #666666;
+    --border-color: #dee2e6;
+    --button-bg: #007bff;
+    --button-hover: #0056b3;
+    --positive-color: #28a745;
+    --negative-color: #dc3545;
+    --neutral-color: #ffc107;
+    --error-color: #dc3545;
+}
+
+[data-theme="dark"] {
+    /* Dark theme */
+    --bg-color: #1a1a1a;
+    --card-bg: #2d2d2d;
+    --text-color: #ffffff;
+    --text-secondary: #cccccc;
+    --border-color: #404040;
+    --button-bg: #007bff;
+    --button-hover: #0056b3;
+    --positive-color: #28a745;
+    --negative-color: #dc3545;
+    --neutral-color: #ffc107;
+    --error-color: #ff6b6b;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+h1 {
+    text-align: center;
+    color: var(--text-color);
+}
+
+.controls {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.theme-toggle:hover {
+    background: var(--button-hover);
+}
+
+#refreshBtn {
+    background-color: var(--button-bg);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+#refreshBtn:hover {
+    background-color: var(--button-hover);
+}
+
+.loading {
+    display: none;
+    color: var(--text-secondary);
+    margin-top: 10px;
+}
+
+.crypto-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.crypto-card {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: background-color 0.3s ease;
+}
+
+.crypto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.crypto-symbol {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.crypto-price {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--positive-color);
+}
+
+.price-change {
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.price-change.positive {
+    color: var(--positive-color);
+}
+
+.price-change.negative {
+    color: var(--negative-color);
+}
+
+.sentiment-section {
+    margin: 15px 0;
+}
+
+.sentiment-bar {
+    width: 100%;
+    height: 20px;
+    background-color: var(--border-color);
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 5px 0;
+}
+
+.sentiment-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.sentiment-fill.positive {
+    background-color: var(--positive-color);
+}
+
+.sentiment-fill.neutral {
+    background-color: var(--neutral-color);
+}
+
+.sentiment-fill.negative {
+    background-color: var(--negative-color);
+}
+
+.prediction-section {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.predicted-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--button-bg);
+}
+
+.confidence {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+.error {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 10px;
+}
