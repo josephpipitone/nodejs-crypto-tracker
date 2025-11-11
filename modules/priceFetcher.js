@@ -19,8 +19,8 @@ function generateSeedData() {
     const basePrice = getBasePriceForSymbol(symbol);
     const prices = [];
     
-    // Generate 30 days of hourly data
-    for (let i = 720; i >= 0; i--) {
+    // Generate 30 days of 4-hour interval data (180 points)
+    for (let i = 720; i >= 0; i -= 4) {
       const timestamp = new Date(now.getTime() - (i * 60 * 60 * 1000)); // i hours ago
       const variance = (Math.random() - 0.5) * 0.1; // ±5% variance
       const price = basePrice * (1 + variance + (Math.sin(i / 100) * 0.02)); // Add some trend
@@ -92,19 +92,24 @@ async function getPrices() {
       seedDatabase();
     }
     
-    // Store in DB
+    // Store in DB (4-hour intervals)
     const now = new Date();
     for (const [symbol, data] of Object.entries(prices)) {
       const currentPrices = db.get(`prices.${symbol}`).value() || [];
-      currentPrices.push({
-        price: data.price,
-        timestamp: now
-      });
-      // Keep only last 30 days (assuming hourly updates)
-      if (currentPrices.length > 720) {
-        currentPrices.splice(0, currentPrices.length - 720);
+      const lastStored = currentPrices.length > 0 ? new Date(currentPrices[currentPrices.length - 1].timestamp) : null;
+
+      // Only store if it's been at least 4 hours since last storage or no data exists
+      if (!lastStored || (now - lastStored) >= 4 * 60 * 60 * 1000) {
+        currentPrices.push({
+          price: data.price,
+          timestamp: now
+        });
+        // Keep only last 30 days (assuming 4-hour updates: 30*24/4 = 180 points)
+        if (currentPrices.length > 180) {
+          currentPrices.splice(0, currentPrices.length - 180);
+        }
+        db.set(`prices.${symbol}`, currentPrices).write();
       }
-      db.set(`prices.${symbol}`, currentPrices).write();
     }
 
     return prices;

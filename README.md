@@ -68,7 +68,7 @@ A web application that tracks real-time cryptocurrency prices, analyzes sentimen
 
 ## Notes
 
-- Price data is cached locally for prediction analysis
+- Price data is cached locally at 4-hour intervals for slope analysis
 - Twitter API has rate limits; sentiment analysis may be limited
 - Slope analysis improves with more historical data (run the app regularly to build history)
 - Without a valid Twitter Bearer Token, sentiment analysis will show errors but prices and slope analysis will still work
