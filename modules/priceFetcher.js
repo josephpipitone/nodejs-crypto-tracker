@@ -34,22 +34,19 @@ async function getPrices() {
     }
 
     // Store in DB
-    await db.read();
     const now = new Date();
     for (const [symbol, data] of Object.entries(prices)) {
-      if (!db.data.prices[symbol]) {
-        db.data.prices[symbol] = [];
-      }
-      db.data.prices[symbol].push({
+      const currentPrices = db.get(`prices.${symbol}`).value() || [];
+      currentPrices.push({
         price: data.price,
         timestamp: now
       });
       // Keep only last 30 days (assuming hourly updates)
-      if (db.data.prices[symbol].length > 720) {
-        db.data.prices[symbol] = db.data.prices[symbol].slice(-720);
+      if (currentPrices.length > 720) {
+        currentPrices.splice(0, currentPrices.length - 720);
       }
+      db.set(`prices.${symbol}`, currentPrices).write();
     }
-    await db.write();
 
     return prices;
   } catch (error) {

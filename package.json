@@ -16,7 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "lowdb": "^7.0.1",
+    "lowdb": "^1.0.0",
     "regression": "^2.0.1",
     "sentiment": "^5.0.2",
     "twitter-api-v2": "^1.27.0"

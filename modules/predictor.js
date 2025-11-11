@@ -4,10 +4,8 @@ const db = require('./db');
 async function getPredictions() {
   const predictions = {};
 
-  await db.read();
-
   for (const symbol of ['BTC', 'ETH', 'SOL', 'DOGE', 'ADA']) {
-    const history = db.data.prices[symbol] || [];
+    const history = db.get(`prices.${symbol}`).value() || [];
 
     if (history.length < 10) {
       predictions[symbol] = {
