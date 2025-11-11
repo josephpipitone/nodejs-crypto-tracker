@@ -2,6 +2,10 @@
 
 A web application that tracks real-time cryptocurrency prices, analyzes sentiment from X (Twitter), and provides price predictions based on historical trends.
 
+## Demo
+
+🚀 **[Live Demo](https://nodejs-crypto-tracker.vercel.app/)**
+
 ## Features
 
 - **Real-time Prices**: Fetches current prices for BTC, ETH, SOL, DOGE, and ADA from CoinGecko API
