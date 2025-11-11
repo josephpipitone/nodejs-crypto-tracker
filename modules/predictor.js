@@ -8,13 +8,34 @@ async function getPredictions() {
     const history = db.get(`prices.${symbol}`).value() || [];
 
     if (history.length < 10) {
-      predictions[symbol] = {
-        symbol,
-        predictedPrice: null,
-        confidence: 0,
-        basedOnDays: history.length,
-        error: 'Insufficient historical data'
-      };
+      // If insufficient data but we have at least some data points, try simple extrapolation
+      if (history.length >= 3) {
+        const prices = history.map(point => point.price);
+        const timestamps = history.map((_, index) => index);
+        
+        // Simple linear extrapolation for minimal datasets
+        const avgPrice = prices.reduce((sum, price) => sum + price, 0) / prices.length;
+        const trend = prices.length > 1 ?
+          (prices[prices.length - 1] - prices[0]) / (prices.length - 1) : 0;
+        const predictedPrice = avgPrice + trend * (history.length);
+        
+        predictions[symbol] = {
+          symbol,
+          predictedPrice: Math.max(predictedPrice, 0),
+          confidence: Math.min(history.length * 10, 50), // Low confidence for small datasets
+          basedOnDays: history.length,
+          trend: trend > 0 ? 'up' : trend < 0 ? 'down' : 'stable',
+          note: 'Based on limited data - confidence may be low'
+        };
+      } else {
+        predictions[symbol] = {
+          symbol,
+          predictedPrice: null,
+          confidence: 0,
+          basedOnDays: history.length,
+          error: 'Insufficient historical data for reliable prediction'
+        };
+      }
       continue;
     }
 
