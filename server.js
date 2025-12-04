@@ -21,18 +21,9 @@ app.get('/api/prices', async (req, res) => {
   }
 });
 
-app.get('/api/sentiment', async (req, res) => {
-  try {
-    const sentiment = await require('./modules/sentimentAnalyzer').getSentiment();
-    res.json(sentiment);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 app.get('/api/predict', async (req, res) => {
   try {
-    const predictions = await require('./modules/predictor').getPredictions();
+    const predictions = await require('./modules/slope').getPredictions();
     res.json(predictions);
   } catch (error) {
     res.status(500).json({ error: error.message });

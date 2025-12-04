@@ -1,6 +1,5 @@
 const cryptoSymbols = ['BTC', 'ETH', 'SOL', 'DOGE', 'ADA'];
 let prices = {};
-let sentiment = {};
 let predictions = {};
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,14 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loadData() {
     showLoading(true);
     try {
-        const [pricesData, sentimentData, predictionsData] = await Promise.all([
+        const [pricesData, predictionsData] = await Promise.all([
             fetch('/api/prices').then(r => r.json()),
-            fetch('/api/sentiment').then(r => r.json()),
             fetch('/api/predict').then(r => r.json())
         ]);
 
         prices = pricesData;
-        sentiment = sentimentData;
         predictions = predictionsData;
 
         renderCryptoCards();
@@ -62,15 +59,14 @@ function renderCryptoCards() {
 
     cryptoSymbols.forEach(symbol => {
         const priceData = prices[symbol];
-        const sentimentData = sentiment[symbol];
         const predictionData = predictions[symbol];
 
-        const card = createCryptoCard(symbol, priceData, sentimentData, predictionData);
+        const card = createCryptoCard(symbol, priceData, predictionData);
         container.appendChild(card);
     });
 }
 
-function createCryptoCard(symbol, priceData, sentimentData, predictionData) {
+function createCryptoCard(symbol, priceData, predictionData) {
     const card = document.createElement('div');
     card.className = 'crypto-card';
 
@@ -98,38 +94,6 @@ function createCryptoCard(symbol, priceData, sentimentData, predictionData) {
 
     card.appendChild(header);
 
-    // Sentiment section
-    if (sentimentData) {
-        const sentimentSection = document.createElement('div');
-        sentimentSection.className = 'sentiment-section';
-
-        const sentimentLabel = document.createElement('div');
-        sentimentLabel.textContent = `Sentiment: ${sentimentData.averageSentiment.toFixed(2)} (${sentimentData.tweetCount} tweets)`;
-
-        const sentimentBar = document.createElement('div');
-        sentimentBar.className = 'sentiment-bar';
-
-        const sentimentFill = document.createElement('div');
-        sentimentFill.className = 'sentiment-fill';
-        const sentimentScore = Math.max(-1, Math.min(1, sentimentData.averageSentiment));
-        const width = Math.abs(sentimentScore) * 50 + 50; // 50-100%
-        sentimentFill.style.width = `${width}%`;
-
-        if (sentimentScore > 0.1) {
-            sentimentFill.classList.add('positive');
-        } else if (sentimentScore < -0.1) {
-            sentimentFill.classList.add('negative');
-        } else {
-            sentimentFill.classList.add('neutral');
-        }
-
-        sentimentBar.appendChild(sentimentFill);
-        sentimentSection.appendChild(sentimentLabel);
-        sentimentSection.appendChild(sentimentBar);
-
-        card.appendChild(sentimentSection);
-    }
-
     // Prediction section
     if (predictionData && !predictionData.error && predictionData.slopeDirection) {
         const predictionSection = document.createElement('div');
@@ -141,7 +105,7 @@ function createCryptoCard(symbol, priceData, sentimentData, predictionData) {
 
         const confidenceEl = document.createElement('div');
         confidenceEl.className = 'confidence';
-        confidenceEl.textContent = `Confidence: ${predictionData.confidence}% (${predictionData.basedOnDays} data points)`;
+        confidenceEl.textContent = `Confidence: ${predictionData.confidence}% (${predictionData.basedOnIntervals || predictionData.basedOnDays || 0} data points)`;
 
         predictionSection.appendChild(slopeEl);
         predictionSection.appendChild(confidenceEl);

@@ -50,13 +50,34 @@ function getBasePriceForSymbol(symbol) {
 function seedDatabase() {
   const seedData = generateSeedData();
   const now = new Date();
-  
+
   for (const [symbol, prices] of Object.entries(seedData)) {
     // Clear existing data and write seed data
     db.set(`prices.${symbol}`, prices).write();
   }
-  
+
   console.log('Database seeded with initial data for Vercel deployment');
+}
+
+async function fetchHistoricalData(symbol, days = 30) {
+  const id = CRYPTO_IDS[symbol];
+  try {
+    const response = await axios.get(`${COINGECKO_URL}/coins/${id}/market_chart`, {
+      params: {
+        vs_currency: 'usd',
+        days: days,
+        interval: 'hourly'
+      }
+    });
+
+    return response.data.prices.map(([timestamp, price]) => ({
+      price,
+      timestamp: new Date(timestamp)
+    }));
+  } catch (error) {
+    console.error(`Failed to fetch historical data for ${symbol}:`, error.message);
+    return [];
+  }
 }
 
 async function getPrices() {
@@ -86,12 +107,31 @@ async function getPrices() {
     const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV;
     const firstSymbol = Object.keys(CRYPTO_IDS)[0];
     const hasExistingData = db.get(`prices.${firstSymbol}`).value();
-    
+
     if (isVercel && (!hasExistingData || hasExistingData.length === 0)) {
       console.log('Seeding database with initial data for Vercel deployment');
       seedDatabase();
     }
-    
+
+    // Fetch historical data for symbols with insufficient data
+    for (const symbol of Object.keys(CRYPTO_IDS)) {
+      const currentPrices = db.get(`prices.${symbol}`).value() || [];
+      if (currentPrices.length < 5) {
+        console.log(`Fetching historical data for ${symbol}...`);
+        const historicalData = await fetchHistoricalData(symbol);
+        if (historicalData.length > 0) {
+          // Merge with existing data, avoiding duplicates
+          const existingTimestamps = new Set(currentPrices.map(p => p.timestamp.getTime()));
+          const newData = historicalData.filter(p => !existingTimestamps.has(p.timestamp.getTime()));
+          const mergedData = [...currentPrices, ...newData].sort((a, b) => a.timestamp - b.timestamp);
+
+          // Keep only last 180 points
+          const finalData = mergedData.slice(-180);
+          db.set(`prices.${symbol}`, finalData).write();
+        }
+      }
+    }
+
     // Store in DB (4-hour intervals)
     const now = new Date();
     for (const [symbol, data] of Object.entries(prices)) {
